@@ -1,0 +1,336 @@
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+  display: block;
+}
+body {
+  line-height: 1;
+}
+ol,
+ul {
+  list-style: none;
+}
+blockquote,
+q {
+  quotes: none;
+}
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+  content: '';
+  content: none;
+}
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+.btn-wrapper {
+  font-size: 0;
+  text-align: center;
+}
+html,
+body {
+  min-height: 100%;
+  font-family: '微软雅黑';
+}
+.btn-item {
+  cursor: pointer;
+  display: inline-block;
+}
+html,
+body {
+  font-family: '微软雅黑';
+  height: 100%;
+}
+input {
+  padding: 0;
+  outline: none;
+  border-style: solid;
+  border-width: thin;
+}
+.border-box {
+  box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+}
+.text-center {
+  text-align: center;
+}
+.font-bold {
+  font-weight: bold;
+}
+.mul-inline-box {
+  font-size: 0;
+  height: 100%;
+  overflow: hidden;
+}
+.mul-inline-box>* {
+  vertical-align: middle;
+}
+.text-ell {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.img-abs {
+  position: absolute;
+}
+.table-middle-wrapper {
+  display: table;
+  height: 100%;
+  overflow: hidden;
+  width: 100%;
+}
+.table-cell {
+  display: table-cell;
+  vertical-align: middle;
+  height: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.f-r {
+  float: right;
+}
+.f-l {
+  float: left;
+}
+.link-pointer-textunderline:hover {
+  cursor: pointer;
+  text-decoration: underline;
+}
+.box-row .box-col {
+  float: left;
+  box-sizing: border-box;
+  -ms-box-sizeing: border-box;
+}
+.box-row.span-15 {
+  margin: 0 -15px;
+}
+.box-row.span-10 {
+  margin: 0 -10px;
+}
+.box-row.span-20 {
+  margin: 0 -20px;
+}
+.box-row.span-20>.box-col {
+  padding: 0 20px;
+}
+.box-row.span-all-15 {
+  margin: -15px;
+}
+.box-row.span-all-15>.box-col {
+  padding: 15px;
+}
+.box-row.span-10>.box-col {
+  padding: 0 10px;
+}
+.box-row.span-15>.box-col {
+  padding: 0 15px;
+}
+.box-col-6 {
+  width: 50%;
+}
+.box-col-8 {
+  width: 66.66666666%;
+}
+.box-col-4 {
+  width: 33.33333333%;
+}
+.box-col-3 {
+  width: 25%;
+}
+.pos-rel {
+  position: relative;
+}
+.border-1px-in-mob {
+  position: relative;
+  height: 1px;
+  transform: scaleY(0.5);
+  -webkit-transform: scaleY(0.5);
+  -moz-transform: scaleY(0.5);
+  -ms-transform: scaleY(0.5);
+  -o-transform: scaleY(0.5);
+  background-color: #e0e0e0;
+  width: 100%;
+}
+.own-box {
+  position: relative;
+}
+.own-box:after,
+.own-box::before {
+  content: '';
+  clear: both;
+  display: table;
+}
+.own-box .own-col {
+  float: left;
+  box-sizing: border-box;
+  -ms-box-sizing: border-box;
+}
+.own-box.own-box5>.own-col {
+  width: 20%;
+}
+.own-box.own-box2>.own-col {
+  width: 50%;
+}
+.own-box.own-box-space30 {
+  margin: 0 -15px;
+}
+.own-box.own-box-space30 .own-col {
+  padding: 0 15px;
+}
+.own-col-4 {
+  width: 33.333333333333336%;
+}
+.own-col-3 {
+  width: 25%;
+}
+.own-col-8 {
+  width: 66.66666666%;
+}
+.own-col-2 {
+  width: 16.66666667%;
+}
+.own-col-10 {
+  width: 83.3333333%;
+}
+.own-col-9 {
+  width: 75%;
+}
+.own-col-6 {
+  width: 50%;
+}
+.no-select {
+  -webkit-touch-callout: none;
+/* iOS Safari */
+  -webkit-user-select: none;
+/* Chrome/Safari/Opera */
+  -khtml-user-select: none;
+/* Konqueror */
+  -moz-user-select: none;
+/* Firefox */
+  -ms-user-select: none;
+/* Internet Explorer/Edge */
+  user-select: none;
+/* Non-prefixed version, currently
+
+not supported by any browser */
+}
+.item-box .item {
+  display: inline-block;
+  font-size: 14px;
+  text-align: center;
+}
+.item-box-3 > * {
+  box-sizing: border-box;
+  width: 33.33333%;
+}
+.item-box-5 > * {
+  box-sizing: border-box;
+  width: 20%;
+}
+.bg-fff {
+  background: #fff;
+}
+
+
+b,strong{
+  font-weight: bold;
+}

@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="/offical">
+  <process id="OFFICAL_CADRES_PASSPORT_APPLY" name="正职处级干部因私事出国（境）审批" isExecutable="true">
+    <startEvent id="startevent1" name="开始"></startEvent>
+    <userTask id="DRAF" name="在线填报申请" activiti:assignee="${creatorId}"></userTask>
+    <sequenceFlow id="flow1" sourceRef="startevent1" targetRef="DRAF"></sequenceFlow>
+    <userTask id="ORGANIZATION_STAFF" name="组织人事处工作人员初审">
+      <extensionElements>
+        <activiti:taskListener event="create" expression="${assigneeListener.notify(task)}"></activiti:taskListener>
+        <activiti:taskListener event="complete" expression="${certificateInfoApplyReturnedListener.notify(task)}"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <userTask id="ORGANIZATION_DIRECTOR" name="组织人事处长复审">
+      <extensionElements>
+        <activiti:taskListener event="create" expression="${assigneeListener.notify(task)}"></activiti:taskListener>
+        <activiti:taskListener event="complete" expression="${certificateInfoApplyReturnedListener.notify(task)}"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <userTask id="BUREAU_DIRECTOR" name="分管局领导复审" activiti:assignee="${assignee}">
+      <extensionElements>
+        <activiti:taskListener event="complete" expression="${certificateInfoApplyReturnedListener.notify(task)}"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <userTask id="BUREAU_MAIN_LEADER" name="局主要领导终审">
+      <extensionElements>
+        <activiti:taskListener event="create" expression="${assigneeListener.notify(task)}"></activiti:taskListener>
+        <activiti:taskListener event="complete" expression="${certificateInfoApplyApprovedListener.notify(task)}"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <exclusiveGateway id="exclusivegateway1" name="Exclusive Gateway"></exclusiveGateway>
+    <userTask id="RECEIVE_PASSPORT" name="申请人扫码领用护照" activiti:assignee="${creatorId}"></userTask>
+    <sequenceFlow id="flow10" sourceRef="exclusivegateway1" targetRef="RECEIVE_PASSPORT">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${hasPassport==true}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="RETURN_PASSPORT" name="申请人扫码归还护照" activiti:assignee="${creatorId}"></userTask>
+    <sequenceFlow id="flow11" sourceRef="RECEIVE_PASSPORT" targetRef="RETURN_PASSPORT"></sequenceFlow>
+    <userTask id="OVER_SETUP--ORGANIZATION_STAFF" name="组织人事处工作人员归档办结">
+      <extensionElements>
+        <activiti:taskListener event="create" expression="${assigneeListener.notify(task)}"></activiti:taskListener>
+        <activiti:taskListener event="complete" expression="${certificateInfoApplyArchivedListener.notify(task)}"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <userTask id="RECEIVE_FILE" name="申请人领取申办函" activiti:assignee="${creatorId}"></userTask>
+    <sequenceFlow id="flow14" sourceRef="exclusivegateway1" targetRef="exclusivegateway6">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${hasPassport==false}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="RETURN_PASSPORT_BYHAND" name="申请人手工归还护照" activiti:assignee="${creatorId}"></userTask>
+    <sequenceFlow id="flow15" sourceRef="RECEIVE_FILE" targetRef="RETURN_PASSPORT_BYHAND"></sequenceFlow>
+    <userTask id="INPUT_OVER_SETUP--ORGANIZATION_STAFF" name="组织人事处工作人员输入信息并归档办结">
+      <extensionElements>
+        <activiti:taskListener event="create" expression="${assigneeListener.notify(task)}"></activiti:taskListener>
+        <activiti:taskListener event="complete" expression="${certificateInfoApplyArchivedListener.notify(task)}"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <endEvent id="endevent2" name="End"></endEvent>
+    <exclusiveGateway id="exclusivegateway2" name="Exclusive Gateway" default="flow24"></exclusiveGateway>
+    <sequenceFlow id="flow22" sourceRef="BUREAU_MAIN_LEADER" targetRef="exclusivegateway2"></sequenceFlow>
+    <sequenceFlow id="flow23" sourceRef="exclusivegateway2" targetRef="ORGANIZATION_STAFF">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${pass==false}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow24" sourceRef="exclusivegateway2" targetRef="exclusivegateway1"></sequenceFlow>
+    <exclusiveGateway id="exclusivegateway3" name="Exclusive Gateway" default="flow26"></exclusiveGateway>
+    <sequenceFlow id="flow25" sourceRef="BUREAU_DIRECTOR" targetRef="exclusivegateway3"></sequenceFlow>
+    <sequenceFlow id="flow26" sourceRef="exclusivegateway3" targetRef="BUREAU_MAIN_LEADER"></sequenceFlow>
+    <sequenceFlow id="flow35" sourceRef="exclusivegateway3" targetRef="ORGANIZATION_STAFF">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${pass==false}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow40" sourceRef="RETURN_PASSPORT" targetRef="OVER_SETUP--ORGANIZATION_STAFF"></sequenceFlow>
+    <sequenceFlow id="flow42" sourceRef="RETURN_PASSPORT_BYHAND" targetRef="INPUT_OVER_SETUP--ORGANIZATION_STAFF"></sequenceFlow>
+    <sequenceFlow id="flow43" sourceRef="INPUT_OVER_SETUP--ORGANIZATION_STAFF" targetRef="endevent2"></sequenceFlow>
+    <sequenceFlow id="flow48" sourceRef="DRAF" targetRef="ORGANIZATION_STAFF"></sequenceFlow>
+    <endEvent id="endevent3" name="End"></endEvent>
+    <sequenceFlow id="flow59" sourceRef="OVER_SETUP--ORGANIZATION_STAFF" targetRef="endevent3"></sequenceFlow>
+    <exclusiveGateway id="exclusivegateway4" name="Exclusive Gateway" default="flow61"></exclusiveGateway>
+    <sequenceFlow id="flow60" sourceRef="ORGANIZATION_STAFF" targetRef="exclusivegateway4"></sequenceFlow>
+    <sequenceFlow id="flow61" sourceRef="exclusivegateway4" targetRef="ORGANIZATION_DIRECTOR"></sequenceFlow>
+    <sequenceFlow id="flow62" sourceRef="exclusivegateway4" targetRef="DRAF">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${pass==false}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="exclusivegateway5" name="Exclusive Gateway" default="flow64"></exclusiveGateway>
+    <sequenceFlow id="flow63" sourceRef="ORGANIZATION_DIRECTOR" targetRef="exclusivegateway5"></sequenceFlow>
+    <sequenceFlow id="flow64" sourceRef="exclusivegateway5" targetRef="BUREAU_DIRECTOR"></sequenceFlow>
+    <sequenceFlow id="flow65" sourceRef="exclusivegateway5" targetRef="ORGANIZATION_STAFF">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${pass==false}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="RECEIVE_OLD_PASSPORT" name="申请人扫码领回旧护照" activiti:assignee="${creatorId}"></userTask>
+    <exclusiveGateway id="exclusivegateway6" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow66" sourceRef="exclusivegateway6" targetRef="RECEIVE_OLD_PASSPORT">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${hasOldPassport==true}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow67" sourceRef="exclusivegateway6" targetRef="RECEIVE_FILE">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${hasOldPassport==false}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow68" sourceRef="RECEIVE_OLD_PASSPORT" targetRef="RECEIVE_FILE"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_OFFICAL_CADRES_PASSPORT_APPLY">
+    <bpmndi:BPMNPlane bpmnElement="OFFICAL_CADRES_PASSPORT_APPLY" id="BPMNPlane_OFFICAL_CADRES_PASSPORT_APPLY">
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="172.0" y="11.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="DRAF" id="BPMNShape_DRAF">
+        <omgdc:Bounds height="55.0" width="123.0" x="128.0" y="82.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ORGANIZATION_STAFF" id="BPMNShape_ORGANIZATION_STAFF">
+        <omgdc:Bounds height="72.0" width="121.0" x="129.0" y="160.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ORGANIZATION_DIRECTOR" id="BPMNShape_ORGANIZATION_DIRECTOR">
+        <omgdc:Bounds height="55.0" width="105.0" x="137.0" y="320.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="BUREAU_DIRECTOR" id="BPMNShape_BUREAU_DIRECTOR">
+        <omgdc:Bounds height="55.0" width="105.0" x="137.0" y="473.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="BUREAU_MAIN_LEADER" id="BPMNShape_BUREAU_MAIN_LEADER">
+        <omgdc:Bounds height="55.0" width="105.0" x="340.0" y="472.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway1" id="BPMNShape_exclusivegateway1">
+        <omgdc:Bounds height="40.0" width="40.0" x="479.0" y="356.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="RECEIVE_PASSPORT" id="BPMNShape_RECEIVE_PASSPORT">
+        <omgdc:Bounds height="55.0" width="127.0" x="540.0" y="260.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="RETURN_PASSPORT" id="BPMNShape_RETURN_PASSPORT">
+        <omgdc:Bounds height="55.0" width="117.0" x="710.0" y="260.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="OVER_SETUP--ORGANIZATION_STAFF" id="BPMNShape_OVER_SETUP--ORGANIZATION_STAFF">
+        <omgdc:Bounds height="67.0" width="121.0" x="870.0" y="254.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="RECEIVE_FILE" id="BPMNShape_RECEIVE_FILE">
+        <omgdc:Bounds height="55.0" width="115.0" x="720.0" y="419.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="RETURN_PASSPORT_BYHAND" id="BPMNShape_RETURN_PASSPORT_BYHAND">
+        <omgdc:Bounds height="55.0" width="123.0" x="869.0" y="419.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="INPUT_OVER_SETUP--ORGANIZATION_STAFF" id="BPMNShape_INPUT_OVER_SETUP--ORGANIZATION_STAFF">
+        <omgdc:Bounds height="67.0" width="121.0" x="1030.0" y="413.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent2" id="BPMNShape_endevent2">
+        <omgdc:Bounds height="35.0" width="35.0" x="1180.0" y="429.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway2" id="BPMNShape_exclusivegateway2">
+        <omgdc:Bounds height="40.0" width="40.0" x="372.0" y="356.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway3" id="BPMNShape_exclusivegateway3">
+        <omgdc:Bounds height="40.0" width="40.0" x="270.0" y="479.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent3" id="BPMNShape_endevent3">
+        <omgdc:Bounds height="35.0" width="35.0" x="1036.0" y="270.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway4" id="BPMNShape_exclusivegateway4">
+        <omgdc:Bounds height="40.0" width="40.0" x="169.0" y="254.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway5" id="BPMNShape_exclusivegateway5">
+        <omgdc:Bounds height="40.0" width="40.0" x="169.0" y="405.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="RECEIVE_OLD_PASSPORT" id="BPMNShape_RECEIVE_OLD_PASSPORT">
+        <omgdc:Bounds height="55.0" width="141.0" x="550.0" y="419.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway6" id="BPMNShape_exclusivegateway6">
+        <omgdc:Bounds height="40.0" width="40.0" x="479.0" y="426.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
+        <omgdi:waypoint x="189.0" y="46.0"></omgdi:waypoint>
+        <omgdi:waypoint x="189.0" y="82.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow10" id="BPMNEdge_flow10">
+        <omgdi:waypoint x="499.0" y="356.0"></omgdi:waypoint>
+        <omgdi:waypoint x="603.0" y="315.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow11" id="BPMNEdge_flow11">
+        <omgdi:waypoint x="667.0" y="287.0"></omgdi:waypoint>
+        <omgdi:waypoint x="710.0" y="287.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow14" id="BPMNEdge_flow14">
+        <omgdi:waypoint x="499.0" y="396.0"></omgdi:waypoint>
+        <omgdi:waypoint x="499.0" y="426.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow15" id="BPMNEdge_flow15">
+        <omgdi:waypoint x="835.0" y="446.0"></omgdi:waypoint>
+        <omgdi:waypoint x="869.0" y="446.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow22" id="BPMNEdge_flow22">
+        <omgdi:waypoint x="392.0" y="472.0"></omgdi:waypoint>
+        <omgdi:waypoint x="392.0" y="396.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow23" id="BPMNEdge_flow23">
+        <omgdi:waypoint x="392.0" y="356.0"></omgdi:waypoint>
+        <omgdi:waypoint x="391.0" y="196.0"></omgdi:waypoint>
+        <omgdi:waypoint x="250.0" y="196.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow24" id="BPMNEdge_flow24">
+        <omgdi:waypoint x="412.0" y="376.0"></omgdi:waypoint>
+        <omgdi:waypoint x="479.0" y="376.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow25" id="BPMNEdge_flow25">
+        <omgdi:waypoint x="242.0" y="500.0"></omgdi:waypoint>
+        <omgdi:waypoint x="270.0" y="499.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow26" id="BPMNEdge_flow26">
+        <omgdi:waypoint x="310.0" y="499.0"></omgdi:waypoint>
+        <omgdi:waypoint x="340.0" y="499.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow35" id="BPMNEdge_flow35">
+        <omgdi:waypoint x="290.0" y="479.0"></omgdi:waypoint>
+        <omgdi:waypoint x="290.0" y="196.0"></omgdi:waypoint>
+        <omgdi:waypoint x="250.0" y="196.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow40" id="BPMNEdge_flow40">
+        <omgdi:waypoint x="827.0" y="287.0"></omgdi:waypoint>
+        <omgdi:waypoint x="870.0" y="287.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow42" id="BPMNEdge_flow42">
+        <omgdi:waypoint x="992.0" y="446.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1030.0" y="446.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow43" id="BPMNEdge_flow43">
+        <omgdi:waypoint x="1151.0" y="446.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1180.0" y="446.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow48" id="BPMNEdge_flow48">
+        <omgdi:waypoint x="189.0" y="137.0"></omgdi:waypoint>
+        <omgdi:waypoint x="189.0" y="160.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow59" id="BPMNEdge_flow59">
+        <omgdi:waypoint x="991.0" y="287.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1036.0" y="287.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow60" id="BPMNEdge_flow60">
+        <omgdi:waypoint x="189.0" y="232.0"></omgdi:waypoint>
+        <omgdi:waypoint x="189.0" y="254.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow61" id="BPMNEdge_flow61">
+        <omgdi:waypoint x="189.0" y="294.0"></omgdi:waypoint>
+        <omgdi:waypoint x="189.0" y="320.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow62" id="BPMNEdge_flow62">
+        <omgdi:waypoint x="209.0" y="274.0"></omgdi:waypoint>
+        <omgdi:waypoint x="277.0" y="274.0"></omgdi:waypoint>
+        <omgdi:waypoint x="277.0" y="206.0"></omgdi:waypoint>
+        <omgdi:waypoint x="277.0" y="109.0"></omgdi:waypoint>
+        <omgdi:waypoint x="251.0" y="109.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow63" id="BPMNEdge_flow63">
+        <omgdi:waypoint x="189.0" y="375.0"></omgdi:waypoint>
+        <omgdi:waypoint x="189.0" y="405.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow64" id="BPMNEdge_flow64">
+        <omgdi:waypoint x="189.0" y="445.0"></omgdi:waypoint>
+        <omgdi:waypoint x="189.0" y="473.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow65" id="BPMNEdge_flow65">
+        <omgdi:waypoint x="169.0" y="425.0"></omgdi:waypoint>
+        <omgdi:waypoint x="97.0" y="424.0"></omgdi:waypoint>
+        <omgdi:waypoint x="97.0" y="196.0"></omgdi:waypoint>
+        <omgdi:waypoint x="129.0" y="196.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow66" id="BPMNEdge_flow66">
+        <omgdi:waypoint x="519.0" y="446.0"></omgdi:waypoint>
+        <omgdi:waypoint x="519.0" y="446.0"></omgdi:waypoint>
+        <omgdi:waypoint x="550.0" y="446.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow67" id="BPMNEdge_flow67">
+        <omgdi:waypoint x="499.0" y="466.0"></omgdi:waypoint>
+        <omgdi:waypoint x="499.0" y="508.0"></omgdi:waypoint>
+        <omgdi:waypoint x="777.0" y="508.0"></omgdi:waypoint>
+        <omgdi:waypoint x="777.0" y="474.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow68" id="BPMNEdge_flow68">
+        <omgdi:waypoint x="691.0" y="446.0"></omgdi:waypoint>
+        <omgdi:waypoint x="720.0" y="446.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

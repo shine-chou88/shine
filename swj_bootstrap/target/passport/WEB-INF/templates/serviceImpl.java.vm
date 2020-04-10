@@ -1,0 +1,63 @@
+package ${packageName}.${serviceDirName}.${serviceImplDirName};
+
+import com.gwideal.common.hibernate.BaseManagerImpl;
+import com.gwideal.common.hibernate.Finder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import ${packageName}.${entityDirName}.${className};
+import ${packageName}.${serviceDirName}.${className}${serviceNameSuffix};
+import com.gwideal.common.page.Pagination;
+import com.gwideal.common.util.StringUtil;
+import com.gwideal.core.model.User;
+import java.util.Date;
+
+@Transactional
+@Service
+public class ${className}${serviceImplNameSuffix} extends BaseManagerImpl<${className}> implements ${className}${serviceNameSuffix} {
+
+	@Override
+	public Pagination list(${className} bean, String sort, String order,
+			int pageIndex, int pageSize, boolean isQuRole,
+			boolean isStreetRole, User user) {
+		Finder f = Finder.create("from ${className} where flag=1 ");
+		if (bean!=null) {
+			#foreach ($column in $columns)
+				#if($column.attrType=="Integer" || $column.attrType=="Double" || $column.attrType=="Boolean" || $column.attrType=="Date")
+				if (null!=bean.get${column.attrName}()) {
+						f.append(" and ${column.attrname} = :${column.attrname}").setParam("${column.attrname}",bean.get${column.attrName}());
+					}
+				#else 
+				if (!StringUtil.isEmpty(bean.get${column.attrName}())) {
+						f.append(" and ${column.attrname} like :${column.attrname}").setParam("${column.attrname}","%"+bean.get${column.attrName}()+"%");
+					}
+				#end
+			#end}
+		if(!StringUtil.isEmpty(sort)&&!StringUtil.isEmpty(order)){
+			f.append(" order by "+sort+" "+order);
+		}else{
+			f.append(" order by updateTime desc");
+		}
+		return super.find(f,pageIndex, pageSize);
+	}
+	
+	@Override
+	public void save(${className} bean, User user) {
+		if(StringUtil.isEmpty(bean.getId())) {
+			bean.setCreator(user);
+		}else{
+			bean.setUpdator(user);			
+		}
+		super.save(bean);
+	}
+	
+	@Override
+	public void delete(${pk.attrType} id, User user) {
+		if(!StringUtil.isEmpty(id)) {
+			${className} bean=super.findById(id);
+			bean.setFlag(0);
+			bean.setUpdator(user);
+			bean.setUpdateTime(new Date());
+			super.save(bean);
+		}
+	}
+}

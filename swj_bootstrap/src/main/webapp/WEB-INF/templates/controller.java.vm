@@ -1,0 +1,82 @@
+package ${packageName}.${controllerDirName};
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import com.gwideal.common.page.SimplePage;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ui.Model;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import ${packageName}.${entityDirName}.${className};
+import ${packageName}.${serviceDirName}.${className}${serviceNameSuffix};
+import com.gwideal.common.page.JsonPagination;
+import com.gwideal.common.page.Pagination;
+import com.gwideal.common.page.Result;
+import com.gwideal.common.web.BaseController;
+import org.springframework.ui.ModelMap;
+
+@Controller
+@RequestMapping("/${classname}")
+public class ${className}${controllerNameSuffix} extends BaseController{
+	protected static final Logger log=LoggerFactory.getLogger(${className}.class);
+	@Autowired
+	private ${className}${serviceNameSuffix} ${classname}${serviceNameSuffix};
+	
+	@RequestMapping("/list")
+	public String list(Model model){
+		return "${controllerReturnPagePrefix}${classname}/list";
+	}
+	
+	@RequestMapping("/jsonPagination")
+	@ResponseBody
+	public JsonPagination jsonPagination(${className} bean,String sort,String order,Integer page,Integer rows,ModelMap model){
+    	if(page==null){page=1;}
+    	if(rows==null){rows=SimplePage.DEF_COUNT;}
+		Pagination p=${classname}${serviceNameSuffix}.list(bean,sort,order,page,rows,hasRole("QU_ROLE"),isStreetRole(),getUser());
+		return getJsonPagination(p,page);
+	}
+	
+	@RequestMapping("/add")
+	public String add(){
+	    return "${controllerReturnPagePrefix}${classname}/edit";
+	}
+
+	@RequestMapping("/edit/{id}")
+	String edit(@PathVariable("id") ${pk.attrType} id,Model model){
+		model.addAttribute("bean",${classname}${serviceNameSuffix}.get(id));
+	    return "${controllerReturnPagePrefix}${classname}/edit";
+	}
+	
+	@RequestMapping("/view/{id}")
+	String view(@PathVariable("id") ${pk.attrType} id,Model model){
+		model.addAttribute("bean",${classname}${serviceNameSuffix}.get(id));
+	    return "${controllerReturnPagePrefix}${classname}/view";
+	}
+	
+	@RequestMapping(value="/save")
+	@ResponseBody
+	public Result save(${className} bean){
+		try {
+			${classname}${serviceNameSuffix}.save(bean,getUser());
+			return getJsonResult(true, Result.SUCCESSMSG);
+		} catch (Exception e) {
+			log.error("",e);
+			return getJsonResult(false, Result.ERRORMSG);
+		}
+	}
+	
+	@RequestMapping("/delete/{id}")
+	@ResponseBody
+	public Result delete(@PathVariable String id) {
+		try {
+			${classname}${serviceNameSuffix}.delete(id,getUser());
+			return getJsonResult(true, Result.SUCCESSMSG);
+		} catch (Exception e) {
+			log.error("",e);
+			return getJsonResult(false, Result.ERRORMSG);
+		}
+	}
+	
+}

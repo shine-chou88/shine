@@ -1,0 +1,11 @@
+.clear-fix::before,
+.clear-fix::after {
+    content: '';
+    display: block;
+    clear: both;
+}
+
+a {
+    text-decoration: none;
+}
+ .wrapper ul li { cursor:pointer}

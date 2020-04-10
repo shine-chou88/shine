@@ -1,0 +1,16 @@
+package ${packageName}.${serviceDirName};
+
+import ${packageName}.${entityDirName}.${className};
+import com.gwideal.common.hibernate.BaseManager;
+import com.gwideal.common.page.Pagination;
+import com.gwideal.core.model.User;
+
+public interface ${className}${serviceNameSuffix} extends BaseManager<${className}>{
+	
+	public Pagination list(${className} bean, String sort, String order,
+			int pageIndex, int pageSize,boolean isQuRole,boolean isStreetRole, User user);
+	
+	public void save(${className} bean, User user);
+	
+	public void delete(${pk.attrType} id, User user);
+}

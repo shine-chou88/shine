@@ -1,0 +1,37 @@
+package ${packageName}.${entityDirName};
+
+import java.io.Serializable;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import com.gwideal.common.entity.GenericEntityNow;
+#if(${hasBigDecimal})
+import java.math.BigDecimal;
+#end
+#if(${hasDate})
+import java.util.Date;
+#end
+
+//${comments}
+@Entity
+@Table(name = "${tableName}")
+public class ${className} extends GenericEntityNow implements Serializable {
+
+#foreach ($column in $columns)
+#if($column.comments && "null"!=$column.comments && $column.comments!="") 
+	//$column.comments
+#end
+	@Column(name = "${column.columnName}")
+	private $column.attrType $column.attrname;
+#end
+
+#foreach ($column in $columns)
+	public void set${column.attrName}($column.attrType $column.attrname) {
+		this.$column.attrname = $column.attrname;
+	}
+	
+	public $column.attrType get${column.attrName}() {
+		return $column.attrname;
+	}
+#end
+}

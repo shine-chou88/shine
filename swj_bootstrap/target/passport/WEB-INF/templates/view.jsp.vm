@@ -1,0 +1,35 @@
+<%@ page language="java" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<%@ include file="/includes/taglibs.jsp"%>
+<%@ include file="/includes/links.jsp"%>
+<html>
+<head>
+	<title>${title}</title>
+</head>
+<body> 
+<div class="easyui-layout" fit="true">
+	<div region="center" border="false">
+        <table cellpadding="5" cellspacing="0" class="a_table" width="100%">
+        	#foreach ($column in $columns)
+        	<tr>
+          		<th width="30%" class="br">
+          			#if($column.comments)${column.comments}#end：
+          		</th>
+          		<td width="70%" class="br">
+          			${ bean.${column.attrname}}&nbsp;
+          		</td>
+        	</tr>
+        	#end
+            <tr>
+            <td class="br" colspan="2">
+           		<div region="south" border="false" style="text-align: center; height: 32px; line-height: 30px; padding-left: 5px;">
+					<a href="javascript:void(0)" class="easyui-linkbutton"
+						iconcls="icon-cancel" onclick="closeWindow()">关闭</a>
+				</div>
+            </td>
+            </tr>
+        </table>
+	</div>
+</div>    	
+</body>
+</html>

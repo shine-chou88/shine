@@ -23,10 +23,13 @@
                     <li class="lsm-sidebar-item">
                         <a class="parent" href="javascript:void(0);"><i class="my-icon lsm-sidebar-icon icon_1"></i><span>系统管理</span><i class="my-icon lsm-sidebar-more"></i></a>
                         <ul>
-                            <gwideal:perm url="/user/list">
-                            	<li><a href="javascript:void(0);" onclick="addTab('用户管理');"><span>用户管理</span></a></li>
+                        	<gwideal:perm url="/activiti/process/list">
+                            	<li><a href="javascript:void(0);" onclick="addTab('流程管理','${base}/activiti/process/list');"><span>流程管理</span></a></li>
                             </gwideal:perm>
-                            <li><a href="javascript:void(0);" onclick="addTab('角色管理');"><span>角色管理</span></a></li>
+                            <gwideal:perm url="/user/list">
+                            	<li><a href="javascript:void(0);" onclick="addTab('用户管理','${base}/user/list');"><span>用户管理</span></a></li>
+                            </gwideal:perm>
+                            <li><a href="javascript:void(0);" onclick="addTab('角色管理','${base}/role/list');"><span>角色管理</span></a></li>
                         </ul>
                     </li>
                     </gwideal:perm>

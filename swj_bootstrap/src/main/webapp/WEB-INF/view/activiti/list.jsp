@@ -1,88 +1,91 @@
 ﻿<%@ page language="java" pageEncoding="UTF-8"%>
-<!DOCTYPE html>
 <%@ include file="/includes/taglibs.jsp"%>
-<%@ include file="/includes/links.jsp"%>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>${title}</title>
-</head>
-<body>
-	<script type="text/javascript">
-		function deploy(){
-			var row = $('#process_dg').datagrid('getSelected');
-			var selections = $('#process_dg').datagrid('getSelections');
-			if(null!=row && selections.length==1){
-				$.messager.confirm('系统提示','确认重新部署该流程吗?',function(r){
-					if(r){
-						$.ajax({ 
-							type: 'POST', 
-							url: '${base}/activiti/process/deploy?id='+row.id,
-							dataType: 'json',  
-							success: function(data){ 
-								if(data.success){
-									$.messager.alert('系统提示',data.info,'info');
-									$("#process_dg").datagrid('reload');
-								}else{
-									$.messager.alert('系统提示',data.info,'error');
-								}
-							} 
-						});
-					}
-				});
-			}else{
-				 $.messager.alert('系统提示','请选择一条数据！','info');
-			}
-		}
-		function deployAll(){
-			$.messager.confirm('系统提示','确认部署所有流程吗?',function(r){
-				if(r){
-					$.ajax({ 
-						type: 'POST', 
-						url: '${base}/activiti/process/deployAll',
-						dataType: 'json',  
-						success: function(data){ 
-							if(data.success){
-								$.messager.alert('系统提示',data.info,'info');
-								$("#process_dg").datagrid('reload');
-							}else{
-								$.messager.alert('系统提示',data.info,'error');
-							}
-						} 
-					});
-				}
-			});
-		}
-		function viewProcessDiagram(){
-			var row = $('#process_dg').datagrid('getSelected');
-			var selections = $('#process_dg').datagrid('getSelections');
-			if(null!=row && selections.length==1){
-				var win=creatWin('查看-流程信息',1120,650,'icon-search','/activiti/process/view/'+row.id);
-			    win.window('open');
-			}else{
-				 $.messager.alert('系统提示','请选择一条数据！','info');
-			}
-		}
-	</script>
-		<div id="process_tb" style="padding:2px 5px;">
-			<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-add" onclick="deploy();" style="width: 120px;">重新部署流程</a>&nbsp;
-			<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-add" onclick="deployAll();" style="width: 130px;">部署所有流程</a>&nbsp;
-			<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search" onclick="viewProcessDiagram();" style="width: 100px;">查看流程图</a>&nbsp;
-			
-		</div>
-	
-		<table id="process_dg" style="width:400px;height:250px" class="easyui-datagrid" data-options="singleSelect:true,collapsible:true,url:'${base}/activiti/process/jsonPagination',
-				method:'post',fit:true,toolbar:'#process_tb',singleSelect: true,selectOnCheck: true,checkOnSelect: true,remoteSort:true,rownumbers:true">
+<div class="container-fluid"
+	style="padding-left: 25px; padding-right: 20px;">
+	<div class="row">
+		<form class="navbar-form navbar-left" role="search">
+			<div class="form-group">
+				姓名：<input type="text" class="form-control" id="userListName" />
+			</div>
+			<button type="button" class="btn btn-default" onclick="reLoad()">查询</button>
+			<button type="button" class="btn btn-primary" data-toggle="modal"
+				data-target="#myModal"><span class='glyphicon glyphicon-plus'></span>&nbsp;添加</button>
+		</form>
+	</div>
+
+	<div class="row">
+		<table id="processListTable">
 			<thead>
 				<tr>
-					<th data-options="field:'ck',checkbox:true"></th>
-					<th data-options="field:'id',align:'left',resizable:false,sortable:true" width="20%">ID</th>
-					<th data-options="field:'key',align:'center',resizable:false,sortable:true" width="20%">Key</th>
-					<th data-options="field:'name',align:'center',resizable:false,sortable:true" width="30%">流程名称</th>
-					<th data-options="field:'version',align:'center',resizable:false,sortable:true" width="10%">版本号</th>
-					<th data-options="field:'deploymentId',align:'center',resizable:false" width="16%">部署ID</th>
+					<th data-checkbox="true"></th>
+					<th data-field="id">ID</th>
+					<th data-field="key" data-align="center">Key</th>
+					<th data-field="name" data-align="center">流程名称</th>
+					<th data-field="version" data-align="center">版本号</th>
+					<th data-field="deploymentId" data-align="center">部署ID</th>
+					<th data-align="center" data-formatter="processFormatter">操作</th>
 				</tr>
 			</thead>
 		</table>
-</body>
-</html>
+	</div>
+	
+	<div class="modal" id="viewProcessModal">
+        <div class="modal-dialog">
+            <div class="modal-content"></div>
+        </div>
+    </div>
+</div>
 
+<script type="text/javascript">
+$(function() {
+	load();
+});
+
+function load() {
+	$('#processListTable')
+		.bootstrapTable(
+			{
+				method: 'post',
+		　　　　 	contentType: "application/x-www-form-urlencoded",
+				url :  "${base}/activiti/process/jsonPagination",
+				cache:false,
+				dataType : "json", // 服务器返回的数据类型
+				pagination : true, // 设置为true会在底部显示分页条
+				singleSelect : true, // 设置为true将禁止多选
+				pageSize : 10, // 如果设置了分页，每页数据条数
+				pageNumber : 1, // 如果设置了分布，首页页码
+				showColumns : false, // 是否显示内容下拉框（选择显示的列）
+				sidePagination : "server"
+			});
+}
+
+function processFormatter(value, row, index){
+	var e = '<a class="btn btn-primary" href="#" mce_href="#" title="重新部署流程" onclick="deployProcess(\''+ row.id+ '\')"><span class="glyphicon glyphicon-pencil"></span>&nbsp;重新部署流程</a> ';
+	var d = '<a class="btn btn-warning" href="${base}/activiti/process/view/'+row.id+'" title="查看流程图" data-target="#viewProcessModal"  mce_href="#"><span class="glyphicon glyphicon-search"></span>&nbsp;查看流程图</a> ';
+	return e + d;
+}
+
+function deployProcess(id){
+	confirmModalInit("确认重新部署该流程吗?");
+    $("#confirmOk").off().on("click", function() {
+        $("#myConfirm").modal("hide");
+        $.ajax({ 
+			type: 'POST', 
+			url: '${base}/activiti/process/deploy?id='+id,
+			dataType: 'json',  
+			success: function(data){ 
+				if(data.success){
+					tipsModalInit(data.info);
+					$('#processListTable').bootstrapTable('refresh');
+				}else{
+					$.messager.alert('系统提示',data.info,'error');
+					tipsModalInit(data.info);
+				}
+			} 
+		});
+    });
+}
+function viewProcess(id){
+	
+}
+</script>

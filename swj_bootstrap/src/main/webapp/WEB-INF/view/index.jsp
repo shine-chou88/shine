@@ -80,7 +80,7 @@
 	<%@include file="/WEB-INF/view/footer.jsp"%>
 </div>
 <script type="text/javascript">
-	function addTab(tabName){
+	function addTab(tabName,url){
 		var tabs = $("#indexTabs");
 		var currentTab=$("#indexTabs .category ul li[title='"+tabName+"']");
 		tabs.find("li").removeClass("active");
@@ -92,7 +92,7 @@
 			tabs.find(".category ul").append("<li class='active' title="+tabName+">"+tabName+"</li>");
 			$.ajax( {
 				type : 'POST',
-				url :   '${base}/user/list',
+				url :   url,
 				dataType : 'html',
 				success : function(data) {
 					$(".container-tabs .price").append("<div class='cont active' title='"+tabName+"'>"+data+"</div>");

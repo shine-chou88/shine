@@ -1,6 +1,5 @@
 ﻿<%@ page language="java" pageEncoding="UTF-8"%>
 <%@ include file="/includes/taglibs.jsp"%>
-<script type="text/javascript" src="${base}/resource/js/data/core/user/list.js"></script>
 	<div class="container-fluid" style="padding-left: 25px;padding-right: 20px;">
 		<div class="row">
 			<form class="navbar-form navbar-left" role="search">
@@ -13,7 +12,20 @@
 		</div>
 
 		<div class="row">
-			<table id="userListTable"></table>
+			<table id="userListTable">
+				<thead>
+					<tr>
+						<th data-field="name">姓名</th>
+						<th data-field="accountNo" data-align="center">账号</th>
+						<th data-field="mobileNo" data-align="center">手机号</th>
+						<th data-field="departName" data-align="center">部门名称</th>
+						<th data-field="locked" data-align="center">是否锁定</th>
+						<th data-field="loginCount" data-align="center">登录次数</th>
+						<th data-field="lastLoginTimeStr" data-align="center">最后登录时间</th>
+						<th data-align="center" data-formatter="userListFormatter">操作</th>
+					</tr>
+				</thead>
+			</table>
 		</div>
 	
 		<!-- Modal -->
@@ -48,3 +60,43 @@
 		  </div>
 		</div>
 	</div>
+	
+<script type="text/javascript">
+$(function() {
+	$('#userListTable').bootstrapTable({
+			method: 'post',
+	　　　　 	contentType: "application/x-www-form-urlencoded",
+			url : "${base}/user/jsonPagination",
+			cache:false,
+			dataType : "json",
+			pagination : true,
+			singleSelect : true,
+			pageSize : 10,
+			pageNumber : 1,
+			showColumns : false,
+			sidePagination : "server",
+			queryParams : queryParams
+		});
+});
+
+function userListFormatter(value, row, index){
+	var e = '<a class="btn btn-primary" href="#" mce_href="#" title="编辑" onclick="edit(\''+ row.id+ '\')">编辑</a> ';
+	var d = '<a class="btn btn-warning" href="#" title="删除"  mce_href="#" onclick="remove(\''+ row.id+ '\')">删除</a> ';
+	return e + d;
+}
+
+
+function queryParams(params){
+	var param = {
+		page: params.offset/params.limit+1,
+		rows: params.limit,
+		name:$('#userListName').val()
+	};
+	return param;
+}
+
+function reLoad() {
+	$('#userListTable').bootstrapTable('refresh');
+}
+
+</script>

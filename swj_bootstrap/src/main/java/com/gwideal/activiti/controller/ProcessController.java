@@ -9,9 +9,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ResourceBundle;
-
 import javax.servlet.http.HttpServletResponse;
-
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.RepositoryService;
@@ -47,11 +45,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.gwideal.activiti.entity.ActGeByteArray;
 import com.gwideal.activiti.entity.ProcessButton;
 import com.gwideal.activiti.entity.ProcessDefinitionJson;
 import com.gwideal.activiti.entity.ProcessInstanceDiagram;
+import com.gwideal.activiti.entity.ProcessInstanceDiagramPng;
 import com.gwideal.activiti.entity.TaskHistoryJson;
 import com.gwideal.activiti.entity.TaskJson;
+import com.gwideal.activiti.manager.ActGeByteArrayMng;
 import com.gwideal.activiti.manager.ProcessMng;
 import com.gwideal.activiti.manager.TaskMng;
 import com.gwideal.attachment.entity.Attachment;
@@ -99,6 +100,8 @@ public class ProcessController extends BaseController{
 	private ProcessMng processMng;
 	@Autowired
 	private AttachmentMng attachmentMng;
+	@Autowired
+	private ActGeByteArrayMng actGeByteArrayMng;
 	
 	/**
 	 * 查询得到所有已部署的流程
@@ -160,6 +163,59 @@ public class ProcessController extends BaseController{
 			return getJsonResult(false,"部署失败，请联系管理员！");
 		}
 		return getJsonResult(true,"部署成功！");
+	}
+	
+	/**
+	 * 更新单个流程
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping("/update")
+	@ResponseBody
+	public Result update(String id){
+		InputStream bpmnInput=null;
+		InputStream pngInput=null;
+		try {
+			if (!StringUtil.isEmpty(id)){
+				ProcessDefinition processDefinition=repositoryService.getProcessDefinition(id);
+				String path=request.getServletContext().getRealPath(processDefinition.getResourceName());
+				File file=new File(path);
+				if(null!=file && file.exists() && file.isFile()){
+		        	List<ActGeByteArray> listBpmn=actGeByteArrayMng.find("from ActGeByteArray Where deploymentId = ? and generated = '0'",new Object[]{processDefinition.getDeploymentId()});
+		        	if(null!=listBpmn && listBpmn.size()==1) {
+		        		ActGeByteArray actGba=listBpmn.get(0);
+		        		byte[] fileBytes=new byte[(int)file.length()];
+		        		bpmnInput=new FileInputStream(file);
+		        		bpmnInput.read(fileBytes);
+		        		actGba.setBytes(fileBytes);
+		        		actGeByteArrayMng.save(actGba);
+		        	}
+		        	
+		        	List<ActGeByteArray> listPng=actGeByteArrayMng.find("from ActGeByteArray Where deploymentId = ? and generated = '1'",new Object[]{processDefinition.getDeploymentId()});
+		        	if(null!=listPng && listPng.size()==1) {
+		        		ActGeByteArray actGba=listPng.get(0);
+		        		pngInput=processEngine.getManagementService().executeCommand(new ProcessInstanceDiagramPng(processEngine,id));
+		        		byte[] pngBytes=new byte[pngInput.available()];
+		        		pngInput.read(pngBytes);
+		        		actGba.setBytes(pngBytes);
+		        		actGeByteArrayMng.save(actGba);
+		        	}
+				}
+	        }
+		} catch (Exception e) {
+			// TODO: handle exception
+			logger.error("", e);
+			return getJsonResult(false,"更新失败，请联系管理员！");
+		}finally {
+			try {
+				bpmnInput.close();
+				pngInput.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				log.error("",e);
+			}
+		}
+		return getJsonResult(true,"更新成功！");
 	}
 	
 	/**
@@ -327,9 +383,35 @@ public class ProcessController extends BaseController{
 		ProcessButton processButton=new ProcessButton();//是否需要“不通过”按钮,没有“退回”操作的流程不需要此按钮
 		model.addAttribute("listUserTask",getNextUserTask(task.getProcessDefinitionId(),task.getProcessInstanceId(),task.getExecutionId(),processButton));
 		model.addAttribute("processButton",processButton);
-		initBean(instance, model);
+		initBean(instance, model,new TaskJson());
 		model.addAttribute("isOrgStaff", getUser().hasRole("ORGANIZATION_STAFF"));
 		return "/WEB-INF/view/activiti/task_complete";
+	}
+	
+	/**
+	 * 自动完成对应业务当前用户的活动节点(例如：“组织人事处工作人员填写原审批事项”需要自动完成)
+	 * @param bussinessKey 业务id
+	 * @return
+	 */
+	@RequestMapping("/autoComplete/{bussinessKey}")
+	@ResponseBody
+	public Result autoComplete(@PathVariable String bussinessKey,ModelMap model){
+		try {
+			Task task = taskService.createTaskQuery().processInstanceBusinessKey(bussinessKey).taskCandidateOrAssigned(getUser().getId()).active().singleResult();
+			TaskJson taskJson=new TaskJson();
+			taskJson.setId(task.getId());
+			taskJson.setPass(true);
+			taskJson.setRejected(false);
+			taskJson.setComment("");
+			ProcessInstance instance=runtimeService.createProcessInstanceQuery().processInstanceId(task.getProcessInstanceId()).singleResult();
+			initBean(instance, model, taskJson);
+			taskMng.complete(taskJson,getUser());
+		} catch (Exception e) {
+			// TODO: handle exception
+			logger.error("", e);
+			return getJsonResult(false,"操作失败，请联系管理员！");
+		}
+		return getJsonResult(true,"操作成功！");
 	}
 	
 	/**
@@ -337,7 +419,7 @@ public class ProcessController extends BaseController{
 	 * @param instance
 	 * @param model
 	 */
-	private void initBean(ProcessInstance instance,ModelMap model){
+	private void initBean(ProcessInstance instance,ModelMap model,TaskJson taskJson){
 		//因私出国(境)申请
 		if("DEPUTY_CADRES_PASSPORT_APPLY".equals(instance.getProcessDefinitionKey()) 
 			|| "OFFICAL_CADRES_PASSPORT_APPLY".equals(instance.getProcessDefinitionKey())){
@@ -345,9 +427,14 @@ public class ProcessController extends BaseController{
 			if(null!=bean && !StringUtil.isEmpty(bean.getApplyUseType())){
 				model.addAttribute("hasPassport",true);
 				model.addAttribute("hasOldPassport", false);//20200122 领用流程默认走扫码领用
+				taskJson.setHasPassport(true);
+				taskJson.setHasOldPassport(false);
 			}else{
 				model.addAttribute("hasPassport",false);
-				model.addAttribute("hasOldPassport",certificateInfoMng.isExistOldPassport(bean.getApplyHandleType(), bean.getCreator()));
+				taskJson.setHasPassport(false);
+				boolean hasOldPassport=certificateInfoMng.isExistOldPassport(bean.getApplyHandleType(), bean.getCreator());
+				model.addAttribute("hasOldPassport",hasOldPassport);
+				taskJson.setHasOldPassport(hasOldPassport);
 			}
 			List<Attachment> list = attachmentMng.list(bean.getCreator());
 			if(list!=null&&list.size()>0){
@@ -389,7 +476,7 @@ public class ProcessController extends BaseController{
 			}
 		}
 		model.addAttribute("listTask",listTask);
-		initBean(instance, model);
+		initBean(instance, model,new TaskJson());
 		return "/WEB-INF/view/activiti/special_approve";
 	}
 	
@@ -418,7 +505,13 @@ public class ProcessController extends BaseController{
 	@RequestMapping("/approveUser")
 	@ResponseBody
 	public List<ComboboxJson> approveUser(String actId){
-		List<User> listApproveUser=userMng.listByRole(actId);
+		//任务Id为角色代码,任务Id包含“--”则取“--”后面的内容作为角色代码(解决两个任务节点是同一个角色的人,任务Id不能重复)
+		String[] roles=actId.split("--");
+		String roleCode=roles[0];
+		if(roles.length>1){
+			roleCode=roles[1];
+		}
+		List<User> listApproveUser=userMng.listByRole(roleCode);
 		return getComboboxJson(listApproveUser);
 	}
 	
@@ -506,6 +599,7 @@ public class ProcessController extends BaseController{
 	@RequestMapping("/view/{processDefinitionId}")
 	public String view(@PathVariable String processDefinitionId,ModelMap model){
 		model.addAttribute("processDefinitionId",processDefinitionId);
+		model.addAttribute("random",Math.random());
 		return "/WEB-INF/view/activiti/view";
 	}
 	

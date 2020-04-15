@@ -8,8 +8,8 @@
 <link rel="stylesheet" type="text/css" href="${base}/resource/css/iconfont.css"/>
 <link rel="stylesheet" type="text/css" href="${base}/resource/css/jquery-tabs.css"/>
 <script type="text/javascript" src="${base}/resource/bootstrap/js/jquery-1.9.1.min.js"></script>
-<script type="text/javascript" src="${base}/resource/bootstrap/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="${base}/resource/bootstrap/js/bootstrap-table.min.js"></script>
+<script type="text/javascript" src="${base}/resource/bootstrap/js/bootstrap.js"></script>
+<script type="text/javascript" src="${base}/resource/bootstrap/js/bootstrap-table.js"></script>
 <script type="text/javascript" src="${base}/resource/bootstrap/js/bootstrap-table-zh-CN.js"></script>
 <script type="text/javascript" src="${base}/resource/js/jquery.slimscroll.min.js"></script>
 <script type="text/javascript" src="${base}/resource/js/left-side-menu.js"></script>
@@ -25,7 +25,7 @@
 	}
 </script>
 
-<div id="confirmModal" class="modal">  
+<div id="confirmModal" class="modal" data-backdrop="static" data-keyboard="false">  
       <div class="modal-dialog modal-lm">  
         <div class="modal-content">  
           <div class="modal-header">  
@@ -43,7 +43,7 @@
       </div>  
 </div>
 
-<div id="tipsModal" class="modal" style="z-index:9999;display: none;">  
+<div id="tipsModal" class="modal" data-backdrop="static" data-keyboard="false">  
       <div class="modal-dialog modal-sm">  
         <div class="modal-content">  
           <div class="modal-header">  

@@ -9,17 +9,25 @@
 			  <div class="form-group">
 				&nbsp;&nbsp;账号：<input type="text" class="form-control" id="userListAccount"/>
 			  </div>
+			  <div class="form-group">
+				&nbsp;&nbsp;是否锁定：
+				<select class="selectpicker" id="userListLock">
+				  <option value="">--请选择--</option>
+		          <option value="TRUE">是</option>
+		          <option value="FALSE">否</option>
+				</select>
+			  </div>
 			  <button type="button" class="btn btn-default" onclick="listUserReLoad();"><span class="glyphicon glyphicon-search"></span>&nbsp;查询</button>
 			  <button type="button" class="btn btn-primary" onclick="addUser();"><span class='glyphicon glyphicon-plus'></span>&nbsp;添加</button>
 			  <button type="button" class="btn btn-warning" onclick="reSetPassword();"><span class='glyphicon glyphicon-repeat'></span>&nbsp;重置密码</button>
-			  <button type="button" class="btn btn-warning" onclick="addUser();"><span class='glyphicon glyphicon-lock'></span>&nbsp;锁定/解锁用户</button>
+			  <button type="button" class="btn btn-warning" onclick="userLock();"><span class='glyphicon glyphicon-lock'></span>&nbsp;锁定/解锁用户</button>
 			</form>
 		</div>
 
 		<div class="row">
-			<table id="userListTable" data-single-select="true" class="table table-bordered table-striped" data-click-to-select="true">
+			<table id="userListTable" data-single-select="true" class="table table-bordered table-hover" data-click-to-select="true">
 				<thead>
-					<tr>
+					<tr style="height: 52px;">
 						<th data-checkbox="true"></th>
 						<th data-field="name">姓名</th>
 						<th data-field="accountNo" data-align="center">账号</th>
@@ -44,23 +52,24 @@
 <script type="text/javascript">
 $(function() {
 	$('#userListTable').bootstrapTable({
-			method: 'post',
-	　　　　 	contentType: "application/x-www-form-urlencoded",
-			url : "${base}/user/jsonPagination",
-			cache:false,
-			dataType : "json",
-			pagination : true,
-			pageSize : 10,
-			pageNumber : 1,
-			showColumns : false,
-			sidePagination : "server",
-			queryParams : queryParams
-		});
+		method: 'post',
+　　　　 	contentType: "application/x-www-form-urlencoded",
+		url : "${base}/user/jsonPagination",
+		cache:false,
+		dataType : "json",
+		pagination : true,
+		pageSize : 10,
+		pageNumber : 1,
+		showColumns : false,
+		sidePagination : "server",
+		queryParams : queryParams
+	});
+	$('.selectpicker').selectpicker({'width':110});
 });
 
 function userListFormatter(value, row, index){
-	var e = '<a class="btn btn-primary" href="#" mce_href="#" title="编辑" onclick="edit(\''+ row.id+ '\')"><span class="glyphicon glyphicon-pencil"></span>&nbsp;编辑</a> ';
-	var d = '<a class="btn btn-warning" href="#" title="删除"  mce_href="#" onclick="remove(\''+ row.id+ '\')"><span class="glyphicon glyphicon-remove"></span>&nbsp;删除</a> ';
+	var e = '<a class="btn btn-primary" href="#" mce_href="#" title="编辑" onclick="userEdit(\''+ row.id+ '\')"><span class="glyphicon glyphicon-pencil"></span>&nbsp;编辑</a> ';
+	var d = '<a class="btn btn-warning" href="#" title="删除"  mce_href="#" onclick="userRemove(\''+ row.id+ '\')"><span class="glyphicon glyphicon-remove"></span>&nbsp;删除</a> ';
 	return e + d;
 }
 
@@ -70,7 +79,8 @@ function queryParams(params){
 		page: params.offset/params.limit+1,
 		rows: params.limit,
 		name:$('#userListName').val(),
-		accountNo:$('#userListAccount').val()
+		accountNo:$('#userListAccount').val(),
+		islocked:$("#userListLock").val()
 	};
 	return param;
 }
@@ -86,6 +96,49 @@ function addUser(){
 	$("#userAddModal").modal({
         remote: '${base}/user/add'
     });
+}
+
+function userLock(){
+	var row=$("#userListTable").bootstrapTable('getSelections');
+	if(row.length==1){
+		confirmModalInit("确认锁定/解锁用户吗?");
+		$("#confirmOk").off().on("click", function() {
+			$.ajax({ 
+				type: 'POST', 
+				url: '${base}/user/lock/'+row[0].id,
+				dataType: 'json',  
+				success: function(data){ 
+					if(data.success){
+						listUserReLoad();
+						tipsModalInit(data.info);
+					}else{
+						tipsModalInit(data.info);
+					}
+				} 
+			});
+		});
+	}else{
+		tipsModalInit('请先选中一条数据！');
+	}
+}
+
+function userRemove(id){
+	confirmModalInit("确认删除用户吗?");
+	$("#confirmOk").off().on("click", function() {
+		$.ajax({ 
+			type: 'POST', 
+			url: '${base}/user/delete/'+id,
+			dataType: 'json',  
+			success: function(data){ 
+				if(data.success){
+					listUserReLoad();
+					tipsModalInit(data.info);
+				}else{
+					tipsModalInit(data.info);
+				}
+			} 
+		});
+	});
 }
 
 function reSetPassword(){

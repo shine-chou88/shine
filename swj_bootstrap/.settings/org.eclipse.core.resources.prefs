@@ -4,6 +4,7 @@ encoding//src/main/java/com/gwideal/swj/certificate/manager/impl/CertificateInfo
 encoding//src/main/resources=UTF-8
 encoding//src/main/resources/generator.properties=UTF-8
 encoding//src/main/resources/system.properties=UTF-8
+encoding//src/main/webapp/WEB-INF/gwideal_core/user/user_list.jsp=UTF-8
 encoding//src/test/java=UTF-8
 encoding/<project>=UTF-8
 encoding/src=UTF-8

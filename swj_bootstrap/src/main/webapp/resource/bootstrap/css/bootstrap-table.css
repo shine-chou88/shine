@@ -82,9 +82,10 @@
 }
 
 .bootstrap-table .fixed-table-container .table thead th {
-  vertical-align: bottom;
+  vertical-align: middle;
   padding: 0;
   margin: 0;
+  height: 52px;
 }
 
 .bootstrap-table .fixed-table-container .table thead th:focus {

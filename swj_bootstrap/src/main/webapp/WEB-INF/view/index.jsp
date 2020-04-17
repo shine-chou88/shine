@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <%@ include file="/includes/taglibs.jsp"%>
 <%@ include file="/includes/links.jsp"%>
-<html>
+<html lang="en">
 <head>
     <title>${title}</title>
 </head>

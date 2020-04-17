@@ -5,10 +5,9 @@
 		win.window('open');
 	}
 	function exitSystem(){
-		$.messager.confirm('系统提示', '确认退出?', function(r){
-			if (r){
-				location.href='${base}/logout.do';
-			}
+		confirmModalInit("确认退出?");
+		$("#confirmOk").off().on("click", function() {
+			location.href='${base}/logout.do';
 		});
 	}
 	function winFullScreen(){
@@ -42,14 +41,6 @@
 			</li>
 			<li><a href="#">欢迎您：<font color="white">${currentUser.name}</font></a></li>
 			<li><a href="javascript:void(0);" onclick="updatePwd()">修改密码</a></li>
-			<li><a href="javascript:void(0);" onclick="helpOnline()">在线帮助</a></li>
-			<c:if test="${currentUser.hasRole('PUBLIC_JBGSGZRY')==true || currentUser.hasRole('PUBLIC_JXSDWBGSZR')==true || currentUser.hasRole('PUBLIC_JBGSZR')==true}">
-	            <li><a href="${base}/resource/download/user_manual_public_simple_v1.1.pdf">因公用户手册</a></li>
-            </c:if>
-            <c:if test="${currentUser.hasRole('DEPUTY_CADRES')==true || currentUser.hasRole('OFFICAL_CADRES')==true || currentUser.hasRole('ORGANIZATION_STAFF')==true
-            || currentUser.hasRole('ORGANIZATION_DIRECTOR')==true || currentUser.hasRole('BUREAU_DIRECTOR')==true || currentUser.hasRole('BUREAU_MAIN_LEADER')==true}">
-	            <li><a href="${base}/resource/download/user_manual_private_simple_v1.1.pdf">因私用户手册</a></li>
-            </c:if>
 			<li><a href="javascript:void(0);" onclick="exitSystem()">退出</a></li>
 		  </ul>
 		</div>

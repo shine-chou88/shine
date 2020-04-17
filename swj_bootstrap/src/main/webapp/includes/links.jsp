@@ -3,14 +3,15 @@
 <script type="text/javascript" src="${base}/resource/plugins/My97DatePicker/WdatePicker.js"></script>
 <script type="text/javascript" src="${base}/resource/js/jsencrypt.min.js"></script>
 <link rel="stylesheet" type="text/css" href="${base}/resource/bootstrap/css/bootstrap.css"/>
+<link rel="stylesheet" type="text/css" href="${base}/resource/bootstrap/css/bootstrap-table.css"/>
 <link rel="stylesheet" type="text/css" href="${base}/resource/bootstrap/css/font-awesome.css"/>
-<link rel="stylesheet" type="text/css" href="${base}/resource/bootstrap/css/bootstrap-table.min.css"/>
 <link rel="stylesheet" type="text/css" href="${base}/resource/bootstrap/css/bootstrap-switch.css"/>
 <link rel="stylesheet" type="text/css" href="${base}/resource/bootstrap/css/bootstrap-validator.css"/>
 <link rel="stylesheet" type="text/css" href="${base}/resource/css/left-side-menu.css"/>
 <link rel="stylesheet" type="text/css" href="${base}/resource/css/iconfont.css"/>
 <link rel="stylesheet" type="text/css" href="${base}/resource/css/jquery-tabs.css"/>
-<script type="text/javascript" src="${base}/resource/bootstrap/js/jquery-1.9.1.min.js"></script>
+<link rel="stylesheet" type="text/css" href="${base}/resource/bootstrap/css/bootstrap-select.css"/>
+<script type="text/javascript" src="${base}/resource/bootstrap/js/jquery-3.3.1.min.js"></script>
 <script type="text/javascript" src="${base}/resource/bootstrap/js/bootstrap.js"></script>
 <script type="text/javascript" src="${base}/resource/bootstrap/js/bootstrap-table.js"></script>
 <script type="text/javascript" src="${base}/resource/bootstrap/js/bootstrap-table-zh-CN.js"></script>
@@ -19,6 +20,7 @@
 <script type="text/javascript" src="${base}/resource/bootstrap/js/bootstrap-validator-zh_CN.js"></script>
 <script type="text/javascript" src="${base}/resource/js/jquery.slimscroll.min.js"></script>
 <script type="text/javascript" src="${base}/resource/js/left-side-menu.js"></script>
+<script type="text/javascript" src="${base}/resource/bootstrap/js/bootstrap-select.js"></script>
 <script type="text/javascript">
 	var base='${base}';
 	function confirmModalInit(message){

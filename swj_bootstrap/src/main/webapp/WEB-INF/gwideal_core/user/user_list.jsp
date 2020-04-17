@@ -6,15 +6,21 @@
 			  <div class="form-group">
 				姓名：<input type="text" class="form-control" id="userListName"/>
 			  </div>
-			  <button type="button" class="btn btn-default" onclick="reLoad()">查询</button>
-			  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">添加</button>
+			  <div class="form-group">
+				&nbsp;&nbsp;账号：<input type="text" class="form-control" id="userListAccount"/>
+			  </div>
+			  <button type="button" class="btn btn-default" onclick="listUserReLoad();"><span class="glyphicon glyphicon-search"></span>&nbsp;查询</button>
+			  <button type="button" class="btn btn-primary" onclick="addUser();"><span class='glyphicon glyphicon-plus'></span>&nbsp;添加</button>
+			  <button type="button" class="btn btn-warning" onclick="reSetPassword();"><span class='glyphicon glyphicon-repeat'></span>&nbsp;重置密码</button>
+			  <button type="button" class="btn btn-warning" onclick="addUser();"><span class='glyphicon glyphicon-lock'></span>&nbsp;锁定/解锁用户</button>
 			</form>
 		</div>
 
 		<div class="row">
-			<table id="userListTable">
+			<table id="userListTable" data-single-select="true" class="table table-bordered table-striped" data-click-to-select="true">
 				<thead>
 					<tr>
+						<th data-checkbox="true"></th>
 						<th data-field="name">姓名</th>
 						<th data-field="accountNo" data-align="center">账号</th>
 						<th data-field="mobileNo" data-align="center">手机号</th>
@@ -27,38 +33,12 @@
 				</thead>
 			</table>
 		</div>
-	
-		<!-- Modal -->
-		<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-		  <div class="modal-dialog" role="document">
-		    <div class="modal-content">
-		      <div class="modal-header">
-		        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-		        <h4 class="modal-title" id="myModalLabel">用户-添加</h4>
-		      </div>
-		      <div class="modal-body">
-		      	<form class="form-horizontal" role="form" id="userEditForm">
-						  <div class="form-group">
-						  	<label class="control-label col-sm-2">姓名：</label>
-						  	<div class="col-sm-9">
-								<input type="text" class="form-control" name="name"/>
-							</div>
-						  </div>
-						  <div class="form-group">
-						  	<label class="control-label col-sm-2">账号：</label>
-						  	<div class="col-sm-9">
-								<input type="text" class="form-control" name="accountno"/>
-							</div>
-						  </div>
-				</form>
-		      </div>
-		      <div class="modal-footer col-center-block">
-		        <button type="button" class="btn btn-default" onclick="save()">保存</button>
-		        <button type="button" class="btn btn-primary" data-dismiss="modal">关闭</button>
-		      </div>
-		    </div>
-		  </div>
-		</div>
+		
+		<div class="modal" id="userAddModal" data-backdrop="static" data-keyboard="false">
+	        <div class="modal-dialog">
+	            <div class="modal-content" style="width:900px;overflow: hidden;"></div>
+	        </div>
+	    </div>
 	</div>
 	
 <script type="text/javascript">
@@ -70,7 +50,6 @@ $(function() {
 			cache:false,
 			dataType : "json",
 			pagination : true,
-			singleSelect : true,
 			pageSize : 10,
 			pageNumber : 1,
 			showColumns : false,
@@ -80,8 +59,8 @@ $(function() {
 });
 
 function userListFormatter(value, row, index){
-	var e = '<a class="btn btn-primary" href="#" mce_href="#" title="编辑" onclick="edit(\''+ row.id+ '\')">编辑</a> ';
-	var d = '<a class="btn btn-warning" href="#" title="删除"  mce_href="#" onclick="remove(\''+ row.id+ '\')">删除</a> ';
+	var e = '<a class="btn btn-primary" href="#" mce_href="#" title="编辑" onclick="edit(\''+ row.id+ '\')"><span class="glyphicon glyphicon-pencil"></span>&nbsp;编辑</a> ';
+	var d = '<a class="btn btn-warning" href="#" title="删除"  mce_href="#" onclick="remove(\''+ row.id+ '\')"><span class="glyphicon glyphicon-remove"></span>&nbsp;删除</a> ';
 	return e + d;
 }
 
@@ -90,13 +69,46 @@ function queryParams(params){
 	var param = {
 		page: params.offset/params.limit+1,
 		rows: params.limit,
-		name:$('#userListName').val()
+		name:$('#userListName').val(),
+		accountNo:$('#userListAccount').val()
 	};
 	return param;
 }
 
-function reLoad() {
+function listUserReLoad() {
 	$('#userListTable').bootstrapTable('refresh');
 }
 
+function addUser(){
+	if($("#userEditForm")[0]!=undefined){
+		$("#userEditForm")[0].reset();
+	}	
+	$("#userAddModal").modal({
+        remote: '${base}/user/add'
+    });
+}
+
+function reSetPassword(){
+	var row=$("#userListTable").bootstrapTable('getSelections');
+	if(row.length==1){
+		confirmModalInit("确认重置密码为123456吗?");
+		$("#confirmOk").off().on("click", function() {
+			$.ajax({ 
+				type: 'POST', 
+				url: '${base}/user/reSetPwd/'+row[0].id,
+				dataType: 'json',  
+				success: function(data){ 
+					if(data.success){
+						listUserReLoad();
+						tipsModalInit(data.info);
+					}else{
+						tipsModalInit(data.info);
+					}
+				} 
+			});
+		});
+	}else{
+		tipsModalInit('请先选中一条数据！');
+	}
+}
 </script>

@@ -3,7 +3,10 @@
 <script type="text/javascript" src="${base}/resource/plugins/My97DatePicker/WdatePicker.js"></script>
 <script type="text/javascript" src="${base}/resource/js/jsencrypt.min.js"></script>
 <link rel="stylesheet" type="text/css" href="${base}/resource/bootstrap/css/bootstrap.css"/>
+<link rel="stylesheet" type="text/css" href="${base}/resource/bootstrap/css/font-awesome.css"/>
 <link rel="stylesheet" type="text/css" href="${base}/resource/bootstrap/css/bootstrap-table.min.css"/>
+<link rel="stylesheet" type="text/css" href="${base}/resource/bootstrap/css/bootstrap-switch.css"/>
+<link rel="stylesheet" type="text/css" href="${base}/resource/bootstrap/css/bootstrap-validator.css"/>
 <link rel="stylesheet" type="text/css" href="${base}/resource/css/left-side-menu.css"/>
 <link rel="stylesheet" type="text/css" href="${base}/resource/css/iconfont.css"/>
 <link rel="stylesheet" type="text/css" href="${base}/resource/css/jquery-tabs.css"/>
@@ -11,6 +14,9 @@
 <script type="text/javascript" src="${base}/resource/bootstrap/js/bootstrap.js"></script>
 <script type="text/javascript" src="${base}/resource/bootstrap/js/bootstrap-table.js"></script>
 <script type="text/javascript" src="${base}/resource/bootstrap/js/bootstrap-table-zh-CN.js"></script>
+<script type="text/javascript" src="${base}/resource/bootstrap/js/bootstrap-switch.js"></script>
+<script type="text/javascript" src="${base}/resource/bootstrap/js/bootstrap-validator.js"></script>
+<script type="text/javascript" src="${base}/resource/bootstrap/js/bootstrap-validator-zh_CN.js"></script>
 <script type="text/javascript" src="${base}/resource/js/jquery.slimscroll.min.js"></script>
 <script type="text/javascript" src="${base}/resource/js/left-side-menu.js"></script>
 <script type="text/javascript">
@@ -25,7 +31,7 @@
 	}
 </script>
 
-<div id="confirmModal" class="modal" data-backdrop="static" data-keyboard="false">  
+<div id="confirmModal" class="modal" data-backdrop="static" data-keyboard="false" style="z-index: 10000;">  
       <div class="modal-dialog modal-lm">  
         <div class="modal-content">  
           <div class="modal-header">  
@@ -43,7 +49,7 @@
       </div>  
 </div>
 
-<div id="tipsModal" class="modal" data-backdrop="static" data-keyboard="false">  
+<div id="tipsModal" class="modal" data-backdrop="static" data-keyboard="false" style="z-index: 10000;">  
       <div class="modal-dialog modal-sm">  
         <div class="modal-content">  
           <div class="modal-header">  

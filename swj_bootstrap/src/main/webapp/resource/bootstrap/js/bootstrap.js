@@ -947,6 +947,7 @@ if (typeof jQuery === 'undefined') {
           this.$element.trigger('loaded.bs.modal')
         }, this))
     }
+    this.$element.draggable();
   }
 
   Modal.VERSION  = '3.3.7'
@@ -967,7 +968,7 @@ if (typeof jQuery === 'undefined') {
   Modal.prototype.show = function (_relatedTarget) {
     var that = this
     var e    = $.Event('show.bs.modal', { relatedTarget: _relatedTarget })
-
+   
     this.$element.trigger(e)
 
     if (this.isShown || e.isDefaultPrevented()) return
@@ -981,7 +982,7 @@ if (typeof jQuery === 'undefined') {
     this.escape()
     this.resize()
 
-    this.$element.on('click.dismiss.bs.modal', '[data-dismiss="modal"]', $.proxy(this.hide, this))
+    this.$element.on('click.dismiss.bs.modal', '[data-dismiss="modal"]:first', $.proxy(this.hide, this))  
 
     this.$dialog.on('mousedown.dismiss.bs.modal', function () {
       that.$element.one('mouseup.dismiss.bs.modal', function (e) {
@@ -1024,15 +1025,13 @@ if (typeof jQuery === 'undefined') {
 
   Modal.prototype.hide = function (e) {
     if (e) e.preventDefault()
-
+    
     e = $.Event('hide.bs.modal')
 
     this.$element.trigger(e)
 
-    if (!this.isShown || e.isDefaultPrevented()) return
-
     this.isShown = false
-
+    
     this.escape()
     this.resize()
 
@@ -1042,7 +1041,12 @@ if (typeof jQuery === 'undefined') {
       .removeClass('in')
       .off('click.dismiss.bs.modal')
       .off('mouseup.dismiss.bs.modal')
-
+    
+    //解决js不重新加载
+    if(this.$element.attr('id')!='confirmModal' && this.$element.attr('id')!='tipsModal'){
+    	this.$element.find('.modal-content').children().remove();
+    }
+      
     this.$dialog.off('mousedown.dismiss.bs.modal')
 
     $.support.transition && this.$element.hasClass('fade') ?
@@ -1211,7 +1215,7 @@ if (typeof jQuery === 'undefined') {
       var data    = $this.data('bs.modal')
       var options = $.extend({}, Modal.DEFAULTS, $this.data(), typeof option == 'object' && option)
 
-      if (!data) $this.data('bs.modal', (data = new Modal(this, options)))
+      $this.data('bs.modal', (data = new Modal(this, options)))
       if (typeof option == 'string') data[option](_relatedTarget)
       else if (options.show) data.show(_relatedTarget)
     })

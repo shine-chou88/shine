@@ -1,6 +1,5 @@
 package com.gwideal.core.controller;
 
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -62,17 +61,9 @@ public class DepartController extends BaseController{
 	}
 	
 	@RequestMapping(value="/jsonTree")
-	public void jsonTree(String checkIds,HttpServletResponse res){
-		try {
-			res.setContentType("text/html;charset=utf-8");
-			PrintWriter pw=res.getWriter();
-			pw.write(departMng.getTree(checkIds));
-			pw.flush();
-			pw.close();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	@ResponseBody
+	public String jsonTree(String checkIds,HttpServletResponse res){
+		return departMng.getTree(checkIds);
 	}
 	
 	@RequestMapping("/list")
@@ -244,8 +235,10 @@ public class DepartController extends BaseController{
 	 * 跳转到部门选择页面
 	 */
 	@RequestMapping("/refUserDepart/{selectType}")
-	public String refUserDepart(@PathVariable String selectType, ModelMap model){
+	public String refUserDepart(@PathVariable String selectType,String elementId,String elementName, ModelMap model){
 		model.addAttribute("selectType", selectType);
+		model.addAttribute("elementId", elementId);
+		model.addAttribute("elementName", elementName);
 		return "/WEB-INF/gwideal_core/depart/refUserDepartGrid";
 	}
 	

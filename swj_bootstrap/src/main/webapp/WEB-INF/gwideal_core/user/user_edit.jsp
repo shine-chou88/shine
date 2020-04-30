@@ -2,7 +2,6 @@
 <%@ include file="/includes/taglibs.jsp"%>
 
 <div class="modal-header bg-primary">
-   <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
    <h4 class="modal-title"><span class='glyphicon glyphicon-plus'></span>&nbsp;添加-用户</h4>
 </div>
 <form class="form-horizontal" role="form" id="userEditForm">
@@ -53,6 +52,14 @@
 				</div>
 		  	</div>
 	  	</fieldset>
+	  	<div class="form-group">
+			<label class="control-label col-sm-2">部门：</label>
+	  		<div class="col-sm-10">
+	  			<input type="hidden" name="depart.id" id="userDepartId" value="${bean.depart.id}"/>
+	  			<button type="button" class="btn btn-default <c:if test="${fn:length(bean.depart.id)==0}">hidden</c:if>" onclick="userDepartRemove();"><span id="userDepartName">${bean.depart.name}</span>&nbsp;<span class='glyphicon glyphicon-remove'></span></button>&nbsp;&nbsp;
+				<button type="button" class="btn btn-warning" onclick="userDepartSelect();"><span class='glyphicon glyphicon-plus'></span>&nbsp;选择</button>
+			</div>
+	  	</div>
 		<div class="form-group form-inline">
 	  		<label class="control-label col-sm-2">身份证号码：</label>
 	  		<div class="col-sm-4">
@@ -110,7 +117,7 @@
 	  	<div class="form-group form-inline">
 			<label class="control-label col-sm-2">拥有的功能：</label>
 	  		<div class="col-sm-10">
-				<ul id="functionUserTree" class="easyui-tree" data-options="url:'${base}/user/functionTree?userId=${bean.id}',animate:true,lines:true,checkbox:true,cascadeCheck:false"></ul>
+				<div id="userFunctionEditTree" style="overflow-y: auto;height: 130px;"></div>
 			</div>
 	  	</div>
 	</div>
@@ -121,6 +128,13 @@
 	  </center>
 	</div>
 </form>
+
+<div class="modal fade" id="userEditDepartModal" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" style="width:650px;overflow: hidden;height: 370px;">
+        <div class="modal-content" style="width:650px;overflow: hidden;height: 370px;"></div>
+    </div>
+</div>
+
 <script type="text/javascript">
 $(function(){
 	$('#userEditForm')
@@ -182,12 +196,8 @@ $(function(){
 		    }
 		})
 		.on('success.form.bv', function(e) {
-		    // Prevent form submission
 		    e.preventDefault();
-		    // Get the form instance
-		    var $form = $(e.target);
-		    // Get the BootstrapValidator instance
-		    var bv = $form.data('bootstrapValidator');
+		 
 		    var beanUserId='${bean.id}';
 		    var encrypt = new JSEncrypt();
 		    encrypt.setPublicKey("MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC4z2h4JuaVJKljC6tdB09ucZzUjbyGCjJcHYi41lypUHWGZ5M4IoPmOWSbVO9XZRBQzp3xBwrbF7lJxK4EGWl9i+BjuRdCUf109jMEo6kMVyjJTtaWAfqohcYBOIXZ3Eqgyyt4sZCIvH4JAB/0mmBPQ1wS6gwW8IPSJEo2Wx3CfQIDAQAB");
@@ -195,6 +205,14 @@ $(function(){
 		    if(beanUserId.length==0){
 		    	$("#userEditRsaPwd").val(encrypt.encrypt($("#userEditPassword").val()));
 			}
+		  	//将功能树选中的值设置到隐藏文本上
+			var nodes = $('#userFunctionEditTree').treeview('getChecked');
+			var ufIds = '';
+			for(var i=0; i<nodes.length;i++){
+				if (ufIds!='') ufIds+=',';
+				ufIds+= nodes[i].id;
+			}
+			$('#userFuncIds').val(ufIds);
 		    $.ajax({
 				cache : false,
 				type : "POST",
@@ -204,8 +222,8 @@ $(function(){
 				dataType: 'json',
 				success : function(data) {
 					if (data.success) {
-						$('#userAddModal').modal('handleUpdate');
-						$('#userAddModal').modal('hide');
+						$('#userEditModal').modal('hide');
+						$('.modal-backdrop:first').remove();
 						tipsModalInit(data.info);
 						listUserReLoad();
 					} else {
@@ -215,27 +233,37 @@ $(function(){
 				}
 			});
 	});
-});
-
-function saveUser() {
+	
 	$.ajax({
 		cache : false,
 		type : "POST",
-		url : "${base}/user/save",
-		data : $('#userEditForm').serialize(),
+		url : "${base}/user/functionTree?userId=${bean.id}",
 		async : false,
-		success : function(data) {
-			var data = eval('(' + data + ')');
-			if (data.success == true) {
-				$('#userAddModal').modal('handleUpdate');
-				$('#userAddModal').modal('hide');
-				tipsModalInit(data.info);
-				listUserReLoad();
-			} else {
-				tipsModalInit(data.info);
-			}
-
+		dataType: 'json',
+		success : function(treeData) {
+			$("#userFunctionEditTree").treeview(
+				{
+					data:treeData,
+					collapseIcon: "glyphicon glyphicon-menu-up",
+					expandIcon: "glyphicon glyphicon-menu-down",
+					showCheckbox:true,
+					cascadeCheck:true,
+					showBorder:true
+				}
+			);
 		}
 	});
+});
+
+function userDepartSelect(){
+	$("#userEditDepartModal").modal({
+        remote: '${base}/depart/refUserDepart/user?elementId=userDepartId&elementName=userDepartName'
+    });
+}
+
+function userDepartRemove(){
+	$("#userDepartId").val('');
+	$("#userDepartName").html('');
+	$("#userDepartName").parent().attr("class","btn btn-default hidden");
 }
 </script>

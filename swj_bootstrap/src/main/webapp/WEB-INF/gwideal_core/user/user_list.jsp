@@ -18,7 +18,7 @@
 				</select>
 			  </div>
 			  <button type="button" class="btn btn-default" onclick="listUserReLoad();"><span class="glyphicon glyphicon-search"></span>&nbsp;查询</button>
-			  <button type="button" class="btn btn-primary" onclick="addUser();"><span class='glyphicon glyphicon-plus'></span>&nbsp;添加</button>
+			  <button type="button" class="btn btn-primary" onclick="userAdd();"><span class='glyphicon glyphicon-plus'></span>&nbsp;添加</button>
 			  <button type="button" class="btn btn-warning" onclick="reSetPassword();"><span class='glyphicon glyphicon-repeat'></span>&nbsp;重置密码</button>
 			  <button type="button" class="btn btn-warning" onclick="userLock();"><span class='glyphicon glyphicon-lock'></span>&nbsp;锁定/解锁用户</button>
 			</form>
@@ -42,8 +42,8 @@
 			</table>
 		</div>
 		
-		<div class="modal" id="userAddModal" data-backdrop="static" data-keyboard="false">
-	        <div class="modal-dialog">
+		<div class="modal fade" id="userEditModal" data-backdrop="static" data-keyboard="false">
+	        <div class="modal-dialog" style="width:900px;overflow: hidden;">
 	            <div class="modal-content" style="width:900px;overflow: hidden;"></div>
 	        </div>
 	    </div>
@@ -89,12 +89,21 @@ function listUserReLoad() {
 	$('#userListTable').bootstrapTable('refresh');
 }
 
-function addUser(){
+function userAdd(){
 	if($("#userEditForm")[0]!=undefined){
 		$("#userEditForm")[0].reset();
 	}	
-	$("#userAddModal").modal({
+	$("#userEditModal").modal({
         remote: '${base}/user/add'
+    });
+}
+
+function userEdit(id){
+	if($("#userEditForm")[0]!=undefined){
+		$("#userEditForm")[0].reset();
+	}	
+	$("#userEditModal").modal({
+        remote: '${base}/user/edit/'+id
     });
 }
 

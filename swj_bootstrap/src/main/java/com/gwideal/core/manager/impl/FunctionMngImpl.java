@@ -217,7 +217,7 @@ public class FunctionMngImpl extends BaseManagerImpl<Function> implements
 				tree.append("{");
 				tree.append("\"id\":"+f.getId()+",");
 				if(listFuncsIds.contains(f.getId())){
-					tree.append("\"checked\":true,");
+					tree.append("\"state\":{\"checked\":true},");
 				}
 				tree.append("\"text\":\""+f.getName()+"\"");
 				addChild(f,listFuncsIds,tree,true);
@@ -239,7 +239,7 @@ public class FunctionMngImpl extends BaseManagerImpl<Function> implements
 	public void addChild(Function f,List<Long> listFuncsIds,StringBuffer tree,boolean isUserTree){
 		List<Function> listChild=super.find("from Function func where func.flag=1 and func.parent.id=? order by priority",f.getId());
 		if(null!=listChild && listChild.size()>0){
-			tree.append(",\"state\":\"closed\",\"children\":[");
+			tree.append(",\"nodes\":[");
 			int t=listChild.size();
 			for (int i = 0; i < t; i++) {
 				Function child=listChild.get(i);
@@ -253,7 +253,7 @@ public class FunctionMngImpl extends BaseManagerImpl<Function> implements
 					tree.append("{");
 					tree.append("\"id\":"+child.getId()+",");
 					if(listFuncsIds.contains(child.getId())){
-						tree.append("\"checked\":true,");
+						tree.append("\"state\":{\"checked\":true},");
 					}
 					tree.append("\"text\":\""+child.getName()+"\"");
 					addChild(child,listFuncsIds,tree,isUserTree);

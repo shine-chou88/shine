@@ -52,12 +52,13 @@ public class DepartMngImpl extends BaseManagerImpl<Depart> implements DepartMng{
 		if(roots!=null && roots.size()>0){
 			for (int i = 0; i < roots.size(); i++) {
 				String rootId=roots.get(i).getId();
-				treeJson.append("{\"id\":\""+rootId+"\",\"text\":\""+roots.get(i).getName()+"\"");
+				String text=roots.get(i).getName().replace("\n","").replace("\r","");
+				treeJson.append("{\"id\":\""+rootId+"\",\"text\":\""+text+"\"");
 				if(!StringUtil.isEmpty(checkIds) && checkIds.contains(rootId)){
 					treeJson.append(",\"checked\":true");
 				}
 				if(null!=roots.get(i).getChildren() && roots.get(i).getChildren().size()>0){
-					treeJson.append(",\"state\":\"closed\"");
+					//treeJson.append(",\"state\":\"closed\"");
 				}else{
 					treeJson.append(",\"isLeaf\":true");
 				}
@@ -76,14 +77,15 @@ public class DepartMngImpl extends BaseManagerImpl<Depart> implements DepartMng{
 		//当前父节点
 		List<Depart> childs=this.getChild(rootId);
 		if(childs!=null&&childs.size()>0){
-			treeJson.append(",\"children\":[");
+			treeJson.append(",\"nodes\":[");
 			for (int j = 0; j < childs.size(); j++) {
-				treeJson.append("{\"id\":\""+childs.get(j).getId()+"\",\"text\":\""+childs.get(j).getName()+"\"");
+				String text=childs.get(j).getName().replace("\n","").replace("\r","");
+				treeJson.append("{\"id\":\""+childs.get(j).getId()+"\",\"text\":\""+text+"\"");
 				if(!StringUtil.isEmpty(checkIds) && checkIds.contains(childs.get(j).getId())){
 					treeJson.append(",\"checked\":true");
 				}
 				if(null!=childs.get(j).getChildren() && childs.get(j).getChildren().size()>0){
-					treeJson.append(",\"state\":\"closed\"");
+					//treeJson.append(",\"state\":\"closed\"");
 				}else{
 					treeJson.append(",\"isLeaf\":true");
 				}

@@ -5934,6 +5934,7 @@ button.close {
 .modal-header {
   padding: 15px;
   border-bottom: 1px solid #e5e5e5;
+  cursor: pointer;
 }
 .modal-header .close {
   margin-top: -2px;

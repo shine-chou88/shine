@@ -12,7 +12,7 @@
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<maven.compiler.compilerVersion>1.8</maven.compiler.compilerVersion>
 		<activiti.version>5.17.0</activiti.version>
-		<org.springframework-version>5.1.4.RELEASE</org.springframework-version>
+		<org.springframework-version>5.3.19</org.springframework-version>
 		<failOnMissingWebXml>false</failOnMissingWebXml>
 	</properties>
 	
